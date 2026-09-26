@@ -1,0 +1,17 @@
+# Render deployment (https://render.com) - read automatically by Render "Blueprints".
+# Free plan: the service sleeps after ~15 min idle, so scheduled runs only fire while it is awake.
+services:
+  - type: web
+    name: shift-handover-automation
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/status
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: TIMEZONE
+        value: Asia/Kolkata
+      - key: EMAIL_PROVIDER
+        value: mock

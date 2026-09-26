@@ -1,0 +1,84 @@
+<div style="font-family: Segoe UI, Arial, sans-serif; font-size: 14px; color: #1b2a41; line-height: 1.5;">
+  <p>Hi Team,</p>
+  <p>Please find below the shift handover details for the <strong>{{ h.shift_name }}</strong> ({{ h.shift_timing }}).</p>
+
+  <h3 style="font-size: 14px; letter-spacing: .04em; color: #1d4ed8; border-bottom: 1px solid #dbe3ef; padding-bottom: 4px; margin: 22px 0 10px;">TICKET SUMMARY</h3>
+  <table style="border-collapse: collapse; font-size: 13px; width: 100%;">
+    <thead>
+      <tr style="background: #f1f5fb;">
+        <th style="text-align: left; padding: 6px 8px; border: 1px solid #dbe3ef;">Assignment Group</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">Generated</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">Open</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">On Hold</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">SLA Risk</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">SLA Breached</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">Important</th>
+        <th style="padding: 6px 8px; border: 1px solid #dbe3ef;">Aging</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in h.groups %}
+      {% set total = r.group == "Total" %}
+      <tr style="{{ 'background: #f1f5fb; font-weight: 600;' if total else '' }}">
+        <td style="padding: 6px 8px; border: 1px solid #dbe3ef;">{{ r.group }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;">{{ r.generated }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;">{{ r.open }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;">{{ r.on_hold }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;{{ ' color: #b45309; font-weight: 600;' if r.sla_risk else '' }}">{{ r.sla_risk }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;{{ ' color: #b91c1c; font-weight: 600;' if r.sla_breached else '' }}">{{ r.sla_breached }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;">{{ r.important }}</td>
+        <td style="text-align: center; padding: 6px 8px; border: 1px solid #dbe3ef;">{{ r.aging }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3 style="font-size: 14px; letter-spacing: .04em; color: #1d4ed8; border-bottom: 1px solid #dbe3ef; padding-bottom: 4px; margin: 22px 0 10px;">IMPORTANT / URGENT TICKETS</h3>
+  <ul style="padding-left: 18px; margin: 0;">
+    {% for t in h.urgent %}
+    {% set color = '#b91c1c' if t.urgency == 'Critical' else '#b45309' %}
+    <li style="margin-bottom: 10px;">
+      <strong>{{ t.ticket_id }}</strong> – {{ t.group }} – {{ t.priority }}
+      <span style="color: {{ color }}; font-weight: 600;">[{{ t.urgency }}]</span><br>
+      {{ t.description }}<br>
+      <span style="color: {{ color }};">{{ t.reasons|join("; ") }}.</span> {{ t.recommendation }}
+      {% if t.note %}<br><span style="color: #52627a;">Latest update: {{ t.note }}</span>{% endif %}
+    </li>
+    {% else %}
+    <li>No urgent tickets.</li>
+    {% endfor %}
+  </ul>
+
+  <h3 style="font-size: 14px; letter-spacing: .04em; color: #1d4ed8; border-bottom: 1px solid #dbe3ef; padding-bottom: 4px; margin: 22px 0 10px;">AGING TICKETS <span style="font-weight: 400; color: #52627a;">(open more than {{ h.aging_threshold }} hours)</span></h3>
+  <ul style="padding-left: 18px; margin: 0;">
+    {% for t in h.aging %}
+    <li style="margin-bottom: 6px;"><strong>{{ t.ticket_id }}</strong> – {{ t.group }} – Open for {{ t.age }}. {{ t.description }}.<br>Please follow up with the respective team.</li>
+    {% else %}
+    <li>No aging tickets.</li>
+    {% endfor %}
+  </ul>
+
+  <h3 style="font-size: 14px; letter-spacing: .04em; color: #1d4ed8; border-bottom: 1px solid #dbe3ef; padding-bottom: 4px; margin: 22px 0 10px;">TICKETS ON HOLD</h3>
+  <ul style="padding-left: 18px; margin: 0;">
+    {% for t in h.on_hold %}
+    <li><strong>{{ t.ticket_id }}</strong> – {{ t.group }} – {{ t.reason }} <span style="color: #52627a;">({{ t.category }})</span></li>
+    {% else %}
+    <li>No tickets on hold.</li>
+    {% endfor %}
+  </ul>
+
+  <h3 style="font-size: 14px; letter-spacing: .04em; color: #1d4ed8; border-bottom: 1px solid #dbe3ef; padding-bottom: 4px; margin: 22px 0 10px;">IMPORTANT TEAM UPDATES</h3>
+  <ul style="padding-left: 18px; margin: 0;">
+    {% for line in h.shift_changes %}<li><strong>Shift change:</strong> {{ line }}</li>{% endfor %}
+    {% for line in h.general_updates %}<li>{{ line }}</li>{% endfor %}
+    {% for line in h.ticket_updates %}<li>{{ line }}</li>{% endfor %}
+    {% if not (h.shift_changes or h.general_updates or h.ticket_updates) %}<li>No important updates from Teams.</li>{% endif %}
+  </ul>
+
+  <h3 style="font-size: 14px; letter-spacing: .04em; color: #1d4ed8; border-bottom: 1px solid #dbe3ef; padding-bottom: 4px; margin: 22px 0 10px;">ACTION REQUIRED FOR INCOMING SHIFT</h3>
+  <ul style="padding-left: 18px; margin: 0;">
+    {% for line in h.actions %}<li>{{ line }}</li>{% endfor %}
+  </ul>
+
+  <p style="margin-top: 24px;">Regards,<br>{{ h.signature }}</p>
+</div>

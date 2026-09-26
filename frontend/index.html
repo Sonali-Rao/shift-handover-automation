@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Handover Automation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Shift Handover Automation</h1>
+      <p class="muted">L1 Cloud Operations · Tickets + Teams updates → handover email</p>
+    </div>
+    <div class="status-pill" id="automationStatus"><span class="dot"></span>Automation: Ready</div>
+  </header>
+
+  <main class="container">
+    <!-- Shift info -->
+    <section class="info-strip">
+      <div><span class="label">Current Shift</span><strong id="currentShift">–</strong></div>
+      <div><span class="label">Shift End</span><strong id="shiftEnd">–</strong></div>
+      <div><span class="label">Next Automatic Run</span><strong id="nextRun">–</strong></div>
+      <div><span class="label">Recipients</span><strong id="recipients">–</strong></div>
+      <div><span class="label">Last Run</span><strong id="lastRun">Not run yet</strong></div>
+    </section>
+
+    <!-- Controls + progress -->
+    <section class="card controls">
+      <div class="control-row">
+        <label for="shiftSelect">Shift</label>
+        <select id="shiftSelect">
+          <option value="">Current shift</option>
+          <option value="morning">Morning Shift</option>
+          <option value="afternoon">Afternoon Shift</option>
+          <option value="night">Night Shift</option>
+        </select>
+        <button class="btn primary" id="generateBtn">Generate Handover</button>
+      </div>
+      <ul class="progress" id="progress"></ul>
+    </section>
+
+    <!-- Summary cards -->
+    <section class="cards" id="summaryCards">
+      <div class="stat"><span class="label">Tickets Generated</span><strong data-key="generated">–</strong></div>
+      <div class="stat"><span class="label">Open</span><strong data-key="open">–</strong></div>
+      <div class="stat"><span class="label">On Hold</span><strong data-key="on_hold">–</strong></div>
+      <div class="stat amber"><span class="label">SLA Risk</span><strong data-key="sla_risk">–</strong></div>
+      <div class="stat red"><span class="label">SLA Breached</span><strong data-key="sla_breached">–</strong></div>
+      <div class="stat"><span class="label">Aging</span><strong data-key="aging">–</strong></div>
+    </section>
+
+    <div class="layout">
+      <!-- The generated email: the main output -->
+      <section class="card email-card">
+        <div class="card-head">
+          <h2>Generated Handover Email</h2>
+          <div class="actions">
+            <button class="btn" id="copyBtn" disabled>Copy Email</button>
+            <button class="btn success" id="sendBtn" disabled>Send Email</button>
+          </div>
+        </div>
+        <div class="send-result" id="sendResult" hidden></div>
+        <div class="email-meta" id="emailMeta" hidden>
+          <div><span class="label">To</span><span id="emailTo"></span></div>
+          <div><span class="label">Subject</span><strong id="emailSubject"></strong></div>
+        </div>
+        <div class="email-body" id="emailBody">
+          <p class="empty">Click <strong>Generate Handover</strong> to build the email from the mock tickets and Teams messages.</p>
+        </div>
+      </section>
+
+      <!-- Side panel -->
+      <aside class="side">
+        <section class="card">
+          <div class="card-head">
+            <h2>Teams Chat Cleaning</h2>
+          </div>
+          <div class="chat-counts" id="chatCounts">Not processed yet.</div>
+          <div class="tabs">
+            <button class="tab active" data-tab="removed">Filtered out</button>
+            <button class="tab" data-tab="kept">Kept</button>
+          </div>
+          <ul class="chat-list" id="chatList"></ul>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Scheduled Runs</h2></div>
+          <ul class="jobs" id="jobs"></ul>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

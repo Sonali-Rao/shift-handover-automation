@@ -1,0 +1,71 @@
+Hi Team,
+
+Please find below the shift handover details for the {{ h.shift_name }} ({{ h.shift_timing }}).
+
+TICKET SUMMARY
+
+{{ "%-24s %9s %5s %8s %9s %13s %10s %6s"|format("Assignment Group", "Generated", "Open", "On Hold", "SLA Risk", "SLA Breached", "Important", "Aging") }}
+{% for r in h.groups %}
+{{ "%-24s %9s %5s %8s %9s %13s %10s %6s"|format(r.group, r.generated, r.open, r.on_hold, r.sla_risk, r.sla_breached, r.important, r.aging) }}
+{% endfor %}
+
+
+IMPORTANT / URGENT TICKETS
+
+{% for t in h.urgent %}
+• {{ t.ticket_id }} – {{ t.group }} – {{ t.priority }} – {{ t.urgency }}
+  {{ t.description }}
+  {{ t.reasons|join("; ") }}. {{ t.recommendation }}
+{% if t.note %}
+  Latest update: {{ t.note }}
+{% endif %}
+
+{% else %}
+• No urgent tickets.
+
+{% endfor %}
+
+AGING TICKETS (open more than {{ h.aging_threshold }} hours)
+
+{% for t in h.aging %}
+• {{ t.ticket_id }} – {{ t.group }} – Open for {{ t.age }}. {{ t.description }}.
+  Please follow up with the respective team.
+{% else %}
+• No aging tickets.
+{% endfor %}
+
+
+TICKETS ON HOLD
+
+{% for t in h.on_hold %}
+• {{ t.ticket_id }} – {{ t.group }} – {{ t.reason }} ({{ t.category }})
+{% else %}
+• No tickets on hold.
+{% endfor %}
+
+
+IMPORTANT TEAM UPDATES
+
+{% for line in h.shift_changes %}
+• Shift change: {{ line }}
+{% endfor %}
+{% for line in h.general_updates %}
+• {{ line }}
+{% endfor %}
+{% for line in h.ticket_updates %}
+• {{ line }}
+{% endfor %}
+{% if not (h.shift_changes or h.general_updates or h.ticket_updates) %}
+• No important updates from Teams.
+{% endif %}
+
+
+ACTION REQUIRED FOR INCOMING SHIFT
+
+{% for line in h.actions %}
+• {{ line }}
+{% endfor %}
+
+
+Regards,
+{{ h.signature }}
